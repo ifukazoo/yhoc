@@ -3,6 +3,7 @@
 %{
 #include "y.tab.h"
 #include "hoc.h"
+#include "symbol.h"
 %}
 
 EXP ([Ee][-+]?[0-9]+)
@@ -15,13 +16,19 @@ EXP ([Ee][-+]?[0-9]+)
 "*" |
 "%" |
 "/" |
+"^" |
 "=" {
   return yytext[0];
 }
 
-[a-z] {
-  yylval.index = yytext[0] - 'a';
-  return VAR;
+[a-zA-Z][0-9a-zA-Z]* {
+  struct symbol* sym = lookup(yytext);
+  if (sym) {
+    yylval.sym = sym;
+  } else {
+    yylval.sym = install(yytext, VAR);
+  }
+  return yylval.sym->type;
 }
 
 [0-9]+"."[0-9]*{EXP}? |

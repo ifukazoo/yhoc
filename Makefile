@@ -1,12 +1,12 @@
 PROGRAM    := hoc
+OBJS       := lexer.o hoc.o symbol.o
 
-$(PROGRAM) : parser.o lexer.o hoc.o
-		    $(LINK.o) $^ $(LDLIBS) -o $@
+all        : $(PROGRAM)
+$(OBJS)    : y.tab.h
+y.tab.h    : parser.o
+$(PROGRAM) : parser.o $(OBJS) builtin.o
+		$(LINK.o) $^ $(LDLIBS) -o $@
 
-hoc.o   : y.tab.h
-y.tab.h : parser.o
-
-all:   $(PROGRAM)
 
 YACC = bison
 LEX = flex

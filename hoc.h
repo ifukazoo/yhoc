@@ -1,5 +1,10 @@
 #ifndef _HOC_H_
 #define _HOC_H_
+
+#include <stdlib.h>
+
 extern int yylineno;
 void yyerror(const char* fmt, ...);
+void* emalloc(size_t size);
+
 #endif
