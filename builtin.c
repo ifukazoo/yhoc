@@ -7,6 +7,7 @@
 
 static void install_const(void);
 static void install_builtin(void);
+static void install_keyword(void);
 
 double sin_(double x)   { return sin(x);   }
 double cos_(double x)   { return cos(x);   }
@@ -20,6 +21,7 @@ void init_builtin(void)
 {
   install_const();
   install_builtin();
+  install_keyword();
 }
 static void install_const(void)
 {
@@ -65,5 +67,22 @@ static void install_builtin(void)
     install(builtins[i].name, BUILTIN);
     sym = lookup(builtins[i].name);
     func_of(sym) = builtins[i].func;
+  }
+}
+static void install_keyword(void)
+{
+  int i;
+  static struct {
+    char* name;
+    int   type;
+  } keyword[] = {
+    {"print", PRINT},
+    {"while", WHILE},
+    {"if"   , IF},
+    {"else" , ELSE},
+    { NULL,   0}, // sentinel
+  };
+  for (i = 0; keyword[i].name; i++) {
+    install(keyword[i].name, keyword[i].type);
   }
 }

@@ -10,9 +10,19 @@
 EXP ([Ee][-+]?[0-9]+)
 
 %%
+">=" { return GE; }
+">"  { return GT; }
+"<=" { return LE; }
+"<"  { return LT; }
+"==" { return EQ; }
+"!=" { return NE; }
+"!"  { return NOT; }
+
 "+" |
 "(" |
 ")" |
+"{" |
+"}" |
 "-" |
 "*" |
 "%" |

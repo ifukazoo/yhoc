@@ -4,46 +4,95 @@
 #include "code.h"
 #include "hoc.h"
 
-#define code2(a,b)   do { code((inst_t)a); code((inst_t)b); } while (0)
-#define code3(a,b,c) do { code((inst_t)a); code((inst_t)b); code((inst_t)c); } while (0)
+inline inst_t* code2(void* a, void* b) {
+  inst_t* start = code((inst_t)a); code((inst_t)b);
+  return start;
+}
+inline inst_t* code3(void* a, void* b, void* c) {
+  inst_t* start = code((inst_t)a); code((inst_t)b); code((inst_t)c);
+  return start;
+}
 %}
 %union {
   inst_t*  inst;
   symbol_t* sym;
 }
 
-%token NUMBER VAR BUILTIN CONST UNDEF EOS
+%token NUMBER VAR BUILTIN CONST UNDEF GT GE LT LE EQ NE AND OR NOT EOS PRINT
+%token IF ELSE WHILE
 %right '='
+%left OR
+%left AND
+%left EQ NE
+%left GT GE LT LE
 %left '+' '-'
 %left '*' '/' '%'
-%right UNARYMUNUS UNARYPLUS
+%right UNARYMUNUS UNARYPLUS NOT
 %right '^' /* - 2 ^ 3 => - (2 ^ 3) */
 
-%type <inst> expr assign
-%type <sym> NUMBER VAR BUILTIN
+%type <inst> expr assign stmt stmtlist while if cond end
+%type <sym> NUMBER VAR BUILTIN PRINT
 
 %start list
 %%
-list     :
-         | list EOS
-         | list assign  EOS { code2(shift, STOP); return 1; }
-         | list expr    EOS { code2(print, STOP); return 1; }
-         | list error   EOS { yyerrok; }
-         ;
-assign   : VAR '=' expr { code3(pushvar, $1, assign); }
-         ;
-expr     : NUMBER        { code2(pushconst, $1); }
-         | BUILTIN '(' expr ')' { code3(pushvar, $1, callbuiltin); }
-         | assign        {}
-         | VAR           { code3(pushvar, $1, eval); }
-         | expr '+' expr { code(add); }
-         | expr '-' expr { code(sub); }
-         | expr '*' expr { code(mul); }
-         | expr '/' expr { code(div_);}
-         | expr '%' expr { code(mod); }
-         | expr '^' expr { code(pow_);}
-         | '(' expr ')'  {}
-         | '-' expr %prec UNARYMUNUS { code(negate);}
-         | '+' expr %prec UNARYPLUS {}
-         ;
+list             :
+                 | list EOS
+                 | list assign  EOS { code2(shift, STOP); return 1; }
+                 | list stmt    EOS { code(STOP); return 1; }
+                 | list expr    EOS { code2(print, STOP); return 1; }
+                 | list error   EOS { yyerrok; }
+                 ;
+assign           : VAR '=' expr  {code3(pushvar, $1, assign); $$ = $3;}
+                 ;
+stmt             : expr             {code(shift);  $$ = $1;}
+                 | PRINT expr       {code(prexpr); $$ = $2;}
+                 | '{' stmtlist '}' {              $$ = $2;}
+                 | while cond stmt end {
+                           *($1 + 1) = (inst_t)$3;
+                           *($1 + 2) = (inst_t)$4;
+                   }
+                 | if cond stmt end ELSE stmt end {
+                           *($1 + 1) = (inst_t)$3;
+                           *($1 + 2) = (inst_t)$6;
+                           *($1 + 3) = (inst_t)$7;
+                   }
+                 | if cond stmt end {
+                           *($1 + 1) = (inst_t)$3;
+                           *($1 + 3) = (inst_t)$4;
+                   }
+                 ;
+stmtlist         :                      { $$ = next_code(); }
+                 | stmtlist EOS         { $$ = $1; }
+                 | stmtlist stmt        { $$ = $1; }
+while            : WHILE                { $$ = code(whilecode); code2(STOP, STOP); }
+                 ;
+if               : IF                   { $$ = code(ifcode); code3(STOP, STOP, STOP); }
+                 ;
+cond             : '(' expr ')'         { code(STOP); $$ = $2;}
+                 ;
+end              :                      { code(STOP); $$ = next_code();}
+                 ;
+expr             : BUILTIN '(' expr ')' { $$ = code3(pushvar, $1, callbuiltin); }
+                 | NUMBER               { $$ = code2(pushconst, $1); }
+                 | VAR                  { $$ = code3(pushvar, $1, eval); }
+                 | assign        {code(eval); $$ = $1;}
+                 | expr '+' expr {code(add);  $$ = $1;}
+                 | expr '-' expr {code(sub);  $$ = $1;}
+                 | expr '*' expr {code(mul);  $$ = $1;}
+                 | expr '/' expr {code(div_); $$ = $1;}
+                 | expr '%' expr {code(mod);  $$ = $1;}
+                 | expr '^' expr {code(pow_); $$ = $1;}
+                 | '(' expr ')'  {            $$ = $2;}
+                 | '-' expr %prec UNARYMUNUS {$$ = code(negate);}
+                 | '+' expr %prec UNARYPLUS  {$$ = $2; }
+                 | expr GT  expr {code(gt);   $$ = $1;}
+                 | expr GE  expr {code(ge);   $$ = $1;}
+                 | expr LT  expr {code(lt);   $$ = $1;}
+                 | expr LE  expr {code(le);   $$ = $1;}
+                 | expr EQ  expr {code(eq);   $$ = $1;}
+                 | expr NE  expr {code(ne);   $$ = $1;}
+                 | expr AND expr {code(and);  $$ = $1;}
+                 | expr OR  expr {code(or);   $$ = $1;}
+                 | NOT expr      {code(not);  $$ = $2;}
+                 ;
 %%

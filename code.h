@@ -13,9 +13,10 @@ typedef union {
 } stack_t;
 
 void init_code(void);
-int run_code(void);
+int run(void);
 void reset_code(void);
 inst_t* code(inst_t inst);
+inst_t* next_code();
 int pushconst(void);
 int pushvar(void);
 int add(void);
@@ -25,10 +26,22 @@ int div_(void);
 int mod(void);
 int pow_(void);
 int negate(void);
+int not(void);
+int gt(void);
+int ge(void);
+int lt(void);
+int le(void);
+int eq(void);
+int ne(void);
+int and(void);
+int or(void);
 int print(void);
+int prexpr(void);
 int shift(void);
 int eval(void);
 int callbuiltin(void);
 int assign(void);
+int whilecode(void);
+int ifcode(void);
 
 #endif

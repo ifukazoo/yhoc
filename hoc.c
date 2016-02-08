@@ -45,11 +45,12 @@ int main(void)
 
   int success = 1;
   while (success) {
+
     reset_code();
-    if ( !yyparse()) {
-      break;
-    }
-    success = run_code();
+    if (! yyparse()) break;
+
+    reset_code();
+    success = run();
   }
   return 0;
 }

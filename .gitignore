@@ -3,6 +3,7 @@
 *.out
 *.swp
 *.d
+*.map
 core
 tags
 hoc

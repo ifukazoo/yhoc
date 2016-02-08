@@ -5,6 +5,7 @@
 
 extern int yylineno;
 void yyerror(const char* fmt, ...);
+int yylex(void);
 void* emalloc(size_t size);
 void reset_error(void);
 

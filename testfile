@@ -1,0 +1,58 @@
+1
+sqrt(2)
+a = 12
+b = 4
+a
+a + b
+(a / b)
+(1 < 2)
+(a < 2)
+(a < b)
+(a != b)
+-a
+if (a > b) c = 2 else c = 3
+c
+if (b) c = 3 else c = 2
+c
+if (b) 1 + 1 else 2 + 2
+if (b) 1 < 2 else 2 < 3
+if (b) !a else !b
+print c
+if (b < a) print a else print b
+if (b > a) print a else print b
+if (b < a) print a
+if (b > a) print a
+if (b > a) print a
+if (b < a) {} else {}
+if (b > a) {} else {}
+if (b > a) {}
+if (b > a) {}
+if (b < a) { c = 5 print c }
+if (b < a) { c = 6; print a + c }
+if (b < a) {
+  c = 7
+  print a + c
+}
+if (b < a) {
+  print a
+} else {
+  print b
+}
+if (b > a) {
+  print a
+} else {
+  print b
+}
+c = 10
+while (c) {
+  print c
+  c = c - 1
+}
+c = 10
+while (c) {
+  print c
+  if ((c % 3) == 0) {
+    print 33
+  }
+  c = c -1
+}
