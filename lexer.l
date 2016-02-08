@@ -5,21 +5,31 @@
 #include "hoc.h"
 %}
 
+EXP ([Ee][-+]?[0-9]+)
+
 %%
-"."?[0-9]+      |
-[0-9]+"."[0-9]* {
-  sscanf(yytext, "%lf", &yylval.v);
-  return NUMBER;
-}
 "+" |
 "(" |
 ")" |
 "-" |
 "*" |
 "%" |
-"/" {
+"/" |
+"=" {
   return yytext[0];
 }
+
+[a-z] {
+  yylval.index = yytext[0] - 'a';
+  return VAR;
+}
+
+[0-9]+"."[0-9]*{EXP}? |
+"."?[0-9]+{EXP}? {
+  sscanf(yytext, "%lf", &yylval.val);
+  return NUMBER;
+}
+
 ;|\n {
   return EOS;
 }
