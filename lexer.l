@@ -1,9 +1,10 @@
 %option noyywrap nodefault yylineno
 
 %{
-#include "y.tab.h"
-#include "hoc.h"
 #include "symbol.h"
+#include "hoc.h"
+#include "code.h"
+#include "y.tab.h"
 %}
 
 EXP ([Ee][-+]?[0-9]+)
@@ -22,18 +23,27 @@ EXP ([Ee][-+]?[0-9]+)
 }
 
 [a-zA-Z][0-9a-zA-Z]* {
-  struct symbol* sym = lookup(yytext);
+  symbol_t* sym = lookup(yytext);
   if (sym) {
     yylval.sym = sym;
   } else {
-    yylval.sym = install(yytext, VAR);
+    // まだassignしてない変数
+    yylval.sym = install(yytext, UNDEF);
   }
-  return yylval.sym->type;
+
+  if (yylval.sym->type == UNDEF || yylval.sym->type == CONST) {
+    return VAR;
+  } else {
+    return yylval.sym->type;
+  }
 }
 
 [0-9]+"."[0-9]*{EXP}? |
 "."?[0-9]+{EXP}? {
-  sscanf(yytext, "%lf", &yylval.val);
+  double d;
+  sscanf(yytext, "%lf", &d);
+  yylval.sym = install("", NUMBER);
+  yylval.sym->un.val = d;
   return NUMBER;
 }
 

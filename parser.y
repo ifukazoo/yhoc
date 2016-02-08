@@ -1,46 +1,49 @@
 %{
 #include <math.h>
 #include "symbol.h"
+#include "code.h"
 #include "hoc.h"
 
+#define code2(a,b)   do { code((inst_t)a); code((inst_t)b); } while (0)
+#define code3(a,b,c) do { code((inst_t)a); code((inst_t)b); code((inst_t)c); } while (0)
 %}
 %union {
-  double val;
-  struct symbol* sym;
+  inst_t*  inst;
+  symbol_t* sym;
 }
 
-%token NUMBER VAR BUILTIN EOS
+%token NUMBER VAR BUILTIN CONST UNDEF EOS
 %right '='
 %left '+' '-'
 %left '*' '/' '%'
 %right UNARYMUNUS UNARYPLUS
 %right '^' /* - 2 ^ 3 => - (2 ^ 3) */
 
-%type <val> NUMBER expr assign
-%type <sym> VAR BUILTIN
+%type <inst> expr assign
+%type <sym> NUMBER VAR BUILTIN
 
 %start list
 %%
 list     :
          | list EOS
-         | list assign  EOS {}
-         | list expr    EOS { printf("\t%.8g\n", $2); }
+         | list assign  EOS { code2(shift, STOP); return 1; }
+         | list expr    EOS { code2(print, STOP); return 1; }
          | list error   EOS { yyerrok; }
          ;
-assign   : VAR  '=' expr { $1->un.val = $3; $$ = $3; }
+assign   : VAR '=' expr { code3(pushvar, $1, assign); }
          ;
-expr     : NUMBER        { $$ = $1; }
-         | BUILTIN '(' expr ')' { $$ = (*($1->un.func))($3); }
-         | assign        { $$ = $1; }
-         | VAR           { $$ = $1->un.val; }
-         | expr '+' expr { $$ = $1 + $3; }
-         | expr '-' expr { $$ = $1 - $3; }
-         | expr '*' expr { $$ = $1 * $3; }
-         | expr '/' expr { $$ = $1 / $3; }
-         | expr '%' expr { $$ = fmod($1, $3); }
-         | expr '^' expr { $$ = pow($1, $3); }
-         | '(' expr ')'  { $$ = $2;}
-         | '-' expr %prec UNARYMUNUS { $$ = -$2;}
+expr     : NUMBER        { code2(pushconst, $1); }
+         | BUILTIN '(' expr ')' { code3(pushvar, $1, callbuiltin); }
+         | assign        {}
+         | VAR           { code3(pushvar, $1, eval); }
+         | expr '+' expr { code(add); }
+         | expr '-' expr { code(sub); }
+         | expr '*' expr { code(mul); }
+         | expr '/' expr { code(div_);}
+         | expr '%' expr { code(mod); }
+         | expr '^' expr { code(pow_);}
+         | '(' expr ')'  {}
+         | '-' expr %prec UNARYMUNUS { code(negate);}
          | '+' expr %prec UNARYPLUS {}
          ;
 %%

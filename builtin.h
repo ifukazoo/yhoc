@@ -8,4 +8,5 @@ double log10_(double);
 double exp_(double);
 double sqrt_(double);
 double abs_(double);
+void init_builtin(void);
 #endif

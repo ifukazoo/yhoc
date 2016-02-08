@@ -1,11 +1,24 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <stdarg.h>
+#include <setjmp.h>
+#include <math.h>
 #include "hoc.h"
-#include "symbol.h"
-#include "builtin.h"
+#include "code.h"
 #include "y.tab.h"
 
+#ifdef HOC_DEBUG
+int yydebug = 1;
+#else
+int yydebug = 0;
+#endif
+
+static jmp_buf begin;
+
+void reset_error(void)
+{
+  longjmp(begin, 0);
+}
 void yyerror(const char *fmt,  ...)
 {
   va_list ap;
@@ -24,50 +37,19 @@ void* emalloc(size_t size)
   }
   return p;
 }
-void init(void)
-{
-  static struct {
-    char* name;
-    double val;
-  } consts[] = {
-    { "PI",     3.14159265358979323846 },
-    { "E",      2.71828182845904523536 },
-    { "GAMMA",  0.57721566490153286050 },
-    { "DEG",   57.29577951308232087680 },
-    { "PHI",    1.61803398874989484820 },
-    { NULL,     0                      }, // sentinel
-  };
-  int i;
-  struct symbol* sym;
-  for (i = 0; consts[i].name; i++) {
-    install(consts[i].name, VAR);
-    sym = lookup(consts[i].name);
-    sym->un.val = consts[i].val;
-  }
-
-  static struct {
-    char* name;
-    double (*func)(double);
-  } builtins[] = {
-    {"sin",   sin_},
-    {"cos",   cos_},
-    {"atan",  atan_},
-    {"log",   log_},
-    {"log10", log10_},
-    {"exp",   exp_},
-    {"sqrt",  sqrt_},
-    {"abs",   abs_},
-    { NULL,   NULL}, // sentinel
-  };
-  for (i = 0; builtins[i].name; i++) {
-    install(builtins[i].name, BUILTIN);
-    sym = lookup(builtins[i].name);
-    sym->un.func = builtins[i].func;
-  }
-}
-
 int main(void)
 {
-  init();
-  return yyparse();
+  init_code();
+
+  setjmp(begin);
+
+  int success = 1;
+  while (success) {
+    reset_code();
+    if ( !yyparse()) {
+      break;
+    }
+    success = run_code();
+  }
+  return 0;
 }

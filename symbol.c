@@ -2,11 +2,11 @@
 #include "hoc.h"
 #include "symbol.h"
 
-static struct symbol* head = NULL;
+static symbol_t* head = NULL;
 
-struct symbol* install(char* name, int type)
+symbol_t* install(char* name, int type)
 {
-  struct symbol* new = emalloc(sizeof(struct symbol));
+  symbol_t* new = emalloc(sizeof(symbol_t));
   new->name = emalloc(strlen(name) + 1);
   strcpy(new->name, name);
   new->type = type;
@@ -14,9 +14,9 @@ struct symbol* install(char* name, int type)
   head = new;
   return new;
 }
-struct symbol* lookup(char* name)
+symbol_t* lookup(char* name)
 {
-  struct symbol* p;
+  symbol_t* p;
   for (p = head; p; p = p->next) {
     if ( ! strcmp(p->name, name)) {
       break;
