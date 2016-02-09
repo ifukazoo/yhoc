@@ -19,6 +19,7 @@ inline inst_t* code3(void* a, void* b, void* c) {
 }
 
 %token NUMBER VAR BUILTIN CONST UNDEF GT GE LT LE EQ NE AND OR NOT EOS PRINT
+%token ADDASGN SUBASGN MULASGN DIVASGN MODASGN POWASGN
 %token IF ELSE WHILE
 %right '='
 %left OR
@@ -46,6 +47,12 @@ assign           : VAR '=' expr  {code3(pushvar, $1, assign); $$ = $3;}
                  ;
 stmt             : expr             {code(shift);  $$ = $1;}
                  | PRINT expr       {code(prexpr); $$ = $2;}
+                 | VAR ADDASGN expr {code3(pushvar, $1, addassign); $$ = $3;}
+                 | VAR SUBASGN expr {code3(pushvar, $1, subassign); $$ = $3;}
+                 | VAR MULASGN expr {code3(pushvar, $1, mulassign); $$ = $3;}
+                 | VAR DIVASGN expr {code3(pushvar, $1, divassign); $$ = $3;}
+                 | VAR MODASGN expr {code3(pushvar, $1, modassign); $$ = $3;}
+                 | VAR POWASGN expr {code3(pushvar, $1, powassign); $$ = $3;}
                  | '{' stmtlist '}' {              $$ = $2;}
                  | while cond stmt end {
                            *($1 + 1) = (inst_t)$3;

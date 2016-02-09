@@ -283,6 +283,96 @@ int assign(void)
 
   return 1;
 }
+int addassign(void)
+{
+  stack_t var = pop();
+  stack_t value = pop();
+  if ( ! (var.sym->type == VAR)) {
+    yyerror("%s:not a variable.", var.sym->name);
+    reset_error(); // longjmp
+    /* not reach */
+  }
+  double newval = value_of(var.sym) + value.n;
+  value_of(var.sym) = newval;
+  push(var);
+
+  return 1;
+}
+int subassign(void)
+{
+  stack_t var = pop();
+  stack_t value = pop();
+  if ( ! (var.sym->type == VAR)) {
+    yyerror("%s:not a variable.", var.sym->name);
+    reset_error(); // longjmp
+    /* not reach */
+  }
+  double newval = value_of(var.sym) - value.n;
+  value_of(var.sym) = newval;
+  push(var);
+
+  return 1;
+}
+int mulassign(void)
+{
+  stack_t var = pop();
+  stack_t value = pop();
+  if ( ! (var.sym->type == VAR)) {
+    yyerror("%s:not a variable.", var.sym->name);
+    reset_error(); // longjmp
+    /* not reach */
+  }
+  double newval = value_of(var.sym) * value.n;
+  value_of(var.sym) = newval;
+  push(var);
+
+  return 1;
+}
+int divassign(void)
+{
+  stack_t var = pop();
+  stack_t value = pop();
+  if ( ! (var.sym->type == VAR)) {
+    yyerror("%s:not a variable.", var.sym->name);
+    reset_error(); // longjmp
+    /* not reach */
+  }
+  double newval = value_of(var.sym) / value.n;
+  value_of(var.sym) = newval;
+  push(var);
+
+  return 1;
+}
+int modassign(void)
+{
+  stack_t var = pop();
+  stack_t value = pop();
+  if ( ! (var.sym->type == VAR)) {
+    yyerror("%s:not a variable.", var.sym->name);
+    reset_error(); // longjmp
+    /* not reach */
+  }
+  double newval = fmod(value_of(var.sym), value.n);
+  value_of(var.sym) = newval;
+  push(var);
+
+  return 1;
+}
+int powassign(void)
+{
+  stack_t var = pop();
+  stack_t value = pop();
+  if ( ! (var.sym->type == VAR)) {
+    yyerror("%s:not a variable.", var.sym->name);
+    reset_error(); // longjmp
+    /* not reach */
+  }
+  double newval = pow(value_of(var.sym), value.n);
+  value_of(var.sym) = newval;
+  push(var);
+
+  return 1;
+}
 int whilecode(void)
 {
   /*

@@ -41,6 +41,12 @@ int shift(void);
 int eval(void);
 int callbuiltin(void);
 int assign(void);
+int addassign(void);
+int subassign(void);
+int mulassign(void);
+int divassign(void);
+int modassign(void);
+int powassign(void);
 int whilecode(void);
 int ifcode(void);
 

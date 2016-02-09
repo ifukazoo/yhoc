@@ -10,6 +10,12 @@
 EXP ([Ee][-+]?[0-9]+)
 
 %%
+"+=" { return ADDASGN; }
+"-=" { return SUBASGN; }
+"*=" { return MULASGN; }
+"/=" { return DIVASGN; }
+"%=" { return MODASGN; }
+"^=" { return POWASGN; }
 ">=" { return GE; }
 ">"  { return GT; }
 "<=" { return LE; }
