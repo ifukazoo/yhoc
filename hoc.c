@@ -5,7 +5,6 @@
 #include <math.h>
 #include "hoc.h"
 #include "code.h"
-#include "y.tab.h"
 
 #ifdef HOC_DEBUG
 int yydebug = 1;

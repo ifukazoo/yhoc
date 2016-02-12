@@ -1,17 +1,7 @@
-PROGRAM    := hoc
-MAPFILE    := $(PROGRAM).map
-OBJS       := \
-							lexer.o\
-							hoc.o\
-							symbol.o\
-							builtin.o\
-							code.o\
-
-all        : $(PROGRAM)
-debug      : $(PROGRAM)
-$(OBJS)    : y.tab.h
-y.tab.h    : parser.o
-$(PROGRAM) : parser.o $(OBJS)
+PROGRAM = hoc
+SRCS    = $(filter-out parser.c lexer.c, $(wildcard *.c))
+OBJS    = $(SRCS:.c=.o) parser.o lexer.o
+MAP     = $(PROGRAM).map
 
 YACC    = bison
 LEX     = flex
@@ -20,11 +10,18 @@ YFLAGS  = -dy -v -t
 CFLAGS  = -g -Wall -Wextra -MMD -MP
 LDLIBS  = -lfl -lm
 
+all   : $(PROGRAM)
+debug : $(PROGRAM)
 debug : YFLAGS  += -l
 debug : CFLAGS  += -D HOC_DEBUG
-debug : LDFLAGS += -Wl,-Map=$(MAPFILE)
+debug : LDFLAGS += -Wl,-Map=$(MAP)
 
--include *.d
-.PHONY: clean
+$(PROGRAM) : $(OBJS)
+builtin.o  : y.tab.h
+y.tab.h    : parser.o
+
 clean:
-		rm -rf *.o *.d parser.[oc] lexer.[oc] y.* *.map $(PROGRAM)
+		rm -rf *.o *.d parser.[oc] lexer.[oc] y.* $(MAP) $(PROGRAM)
+
+.PHONY: all clean
+-include *.d
