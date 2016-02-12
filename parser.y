@@ -30,6 +30,7 @@ inline inst_t* code3(void* a, void* b, void* c) {
 %left '*' '/' '%'
 %right UNARYMUNUS UNARYPLUS NOT
 %right '^' /* - 2 ^ 3 => - (2 ^ 3) */
+%left ADDASGN SUBASGN MULASGN DIVASGN MODASGN POWASGN
 
 %type <inst> expr assign stmt stmtlist while if cond end
 %type <sym> NUMBER VAR BUILTIN PRINT
