@@ -28,7 +28,6 @@ if (b > a) {} else {}
 if (b > a) {}
 if (b > a) {}
 if (b < a) { c = 5 print c }
-if (b < a) { c = 6; print a + c }
 if (b < a) {
   c = 7
   print a + c
@@ -81,3 +80,11 @@ print a
 a = 100
 a ^= 3
 print a
+sum = 0
+for (a = 1; a <= 10; a += 1) {
+  sum += a
+}
+print sum
+for (i = 1; i <= 32; i += 1) {
+  print 2^i
+}

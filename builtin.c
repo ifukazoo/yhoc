@@ -78,6 +78,7 @@ static void install_keyword(void)
   } keyword[] = {
     {"print", PRINT},
     {"while", WHILE},
+    {"for"  , FOR},
     {"if"   , IF},
     {"else" , ELSE},
     { NULL,   0}, // sentinel

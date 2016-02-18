@@ -18,9 +18,9 @@ inline inst_t* code3(void* a, void* b, void* c) {
   symbol_t* sym;
 }
 
-%token NUMBER VAR BUILTIN CONST UNDEF GT GE LT LE EQ NE AND OR NOT EOS PRINT
+%token NUMBER VAR BUILTIN CONST UNDEF GT GE LT LE EQ NE AND OR NOT EOS PRINT SEM
 %token ADDASGN SUBASGN MULASGN DIVASGN MODASGN POWASGN
-%token IF ELSE WHILE
+%token IF ELSE WHILE FOR
 %right '='
 %left OR
 %left AND
@@ -32,7 +32,7 @@ inline inst_t* code3(void* a, void* b, void* c) {
 %right '^' /* - 2 ^ 3 => - (2 ^ 3) */
 %left ADDASGN SUBASGN MULASGN DIVASGN MODASGN POWASGN
 
-%type <inst> expr assign stmt stmtlist while if cond end
+%type <inst> expr assign stmt stmtlist while for delim if cond end
 %type <sym> NUMBER VAR BUILTIN PRINT
 
 %start list
@@ -68,11 +68,21 @@ stmt             : expr             {code(shift);  $$ = $1;}
                            *($1 + 1) = (inst_t)$3;
                            *($1 + 3) = (inst_t)$4;
                    }
+                 | for '(' assign delim expr delim assign end ')' stmt end {
+                           *($1 + 1) = (inst_t)$5;
+                           *($1 + 2) = (inst_t)$7;
+                           *($1 + 3) = (inst_t)$10;
+                           *($1 + 4) = (inst_t)$11;
+                   }
                  ;
 stmtlist         :                      { $$ = next_code(); }
                  | stmtlist EOS         { $$ = $1; }
                  | stmtlist stmt        { $$ = $1; }
 while            : WHILE                { $$ = code(whilecode); code2(STOP, STOP); }
+                 ;
+for              : FOR                  { $$ = code(forcode); code2(STOP, STOP);code2(STOP, STOP);}
+                 ;
+delim            : SEM                  { code(STOP); $$ = next_code();}
                  ;
 if               : IF                   { $$ = code(ifcode); code3(STOP, STOP, STOP); }
                  ;

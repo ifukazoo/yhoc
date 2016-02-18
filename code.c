@@ -408,6 +408,56 @@ int whilecode(void)
 
   return 1;
 }
+int forcode(void)
+{
+  /*
+     for
+     inst      --+
+     inst        | --+
+     inst        |   | --+
+     inst        |   |   | --+
+     assign      |   |   |   |
+     ...         |   |   |   |
+     STOP        |   |   |   |
+     cond      <-+   |   |   |
+     ...             |   |   |
+     STOP            |   |   |
+     after     <-----+   |   |
+     ...                 |   |
+     STOP                |   |
+     stmt      <---------+   |
+     ...                     |
+     STOP                    |
+     next_code <-------------+
+ */
+
+  inst_t* base = pc - 1;
+
+  // assign
+  pc = base + 5;
+  run();
+
+  for (;;) {
+    // cond
+    pc = (inst_t*)*(base + 1);
+    run();
+    stack_t cond = pop();
+    if (! cond.n)  break;
+
+    // statement
+    pc = (inst_t*)*(base + 3);
+    run();
+
+    // after
+    pc = (inst_t*)*(base + 2);
+    run();
+  }
+
+  // next
+  pc = (inst_t*)*(base + 4);
+
+  return 1;
+}
 int ifcode(void)
 {
   /*

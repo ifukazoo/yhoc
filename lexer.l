@@ -63,7 +63,10 @@ EXP ([Ee][-+]?[0-9]+)
   return NUMBER;
 }
 
-;|\n {
+";" {
+  return SEM;
+}
+\n {
   return EOS;
 }
 [ \t] {

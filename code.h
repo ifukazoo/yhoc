@@ -48,6 +48,7 @@ int divassign(void);
 int modassign(void);
 int powassign(void);
 int whilecode(void);
+int forcode(void);
 int ifcode(void);
 
 #endif
