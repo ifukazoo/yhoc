@@ -16,13 +16,15 @@ EXP ([Ee][-+]?[0-9]+)
 "/=" { return DIVASGN; }
 "%=" { return MODASGN; }
 "^=" { return POWASGN; }
-">=" { return GE; }
-">"  { return GT; }
-"<=" { return LE; }
-"<"  { return LT; }
-"==" { return EQ; }
-"!=" { return NE; }
-"!"  { return NOT; }
+">=" { return GE;      }
+">"  { return GT;      }
+"<=" { return LE;      }
+"<"  { return LT;      }
+"==" { return EQ;      }
+"!=" { return NE;      }
+"&&" { return AND;     }
+"||" { return OR;      }
+"!"  { return NOT;     }
 
 "+" |
 "(" |
