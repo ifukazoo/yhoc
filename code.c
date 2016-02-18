@@ -377,9 +377,9 @@ int whilecode(void)
 {
   /*
      while
-     inst --------+     (ifcode + 1)
-     inst [next]  |     (ifcode + 2)
-     cond         |     (ifcode + 3)
+     inst --------+     (whilecode + 1)
+     inst [next]  |     (whilecode + 2)
+     cond         |     (whilecode + 3)
      ...          |
      ...          |
      STOP         |

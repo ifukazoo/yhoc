@@ -40,20 +40,20 @@ inline inst_t* code3(void* a, void* b, void* c) {
 list             :
                  | list EOS
                  | list assign  EOS { code2(shift, STOP); return 1; }
-                 | list stmt    EOS { code(STOP); return 1; }
+                 | list stmt    EOS { code(STOP)        ; return 1; }
                  | list expr    EOS { code2(print, STOP); return 1; }
                  | list error   EOS { yyerrok; }
                  ;
-assign           : VAR '=' expr  {code3(pushvar, $1, assign); $$ = $3;}
-                 ;
-stmt             : expr             {code(shift);  $$ = $1;}
-                 | PRINT expr       {code(prexpr); $$ = $2;}
+assign           : VAR '='     expr {code3(pushvar, $1, assign);    $$ = $3;}
                  | VAR ADDASGN expr {code3(pushvar, $1, addassign); $$ = $3;}
                  | VAR SUBASGN expr {code3(pushvar, $1, subassign); $$ = $3;}
                  | VAR MULASGN expr {code3(pushvar, $1, mulassign); $$ = $3;}
                  | VAR DIVASGN expr {code3(pushvar, $1, divassign); $$ = $3;}
                  | VAR MODASGN expr {code3(pushvar, $1, modassign); $$ = $3;}
                  | VAR POWASGN expr {code3(pushvar, $1, powassign); $$ = $3;}
+                 ;
+stmt             : expr             {code(shift);  $$ = $1;}
+                 | PRINT expr       {code(prexpr); $$ = $2;}
                  | '{' stmtlist '}' {              $$ = $2;}
                  | while cond stmt end {
                            *($1 + 1) = (inst_t)$3;
