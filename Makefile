@@ -12,7 +12,7 @@ LDLIBS  = -lfl -lm
 
 all   : $(PROGRAM)
 debug : $(PROGRAM)
-debug : YFLAGS  += -l
+debug : YFLAGS  += --report=all
 debug : CFLAGS  += -D HOC_DEBUG
 debug : LDFLAGS += -Wl,-Map=$(MAP)
 
