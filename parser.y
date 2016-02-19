@@ -56,22 +56,22 @@ stmt             : expr             {code(shift);  $$ = $1;}
                  | PRINT expr       {code(prexpr); $$ = $2;}
                  | '{' stmtlist '}' {              $$ = $2;}
                  | while cond stmt end {
-                           *($1 + 1) = (inst_t)$3;
-                           *($1 + 2) = (inst_t)$4;
+                     *($1 + 1) = (inst_t)$3;
+                     *($1 + 2) = (inst_t)$4;
                    }
                  | if cond stmt end ELSE stmt end {
-                           *($1 + 1) = (inst_t)$3;
-                           *($1 + 2) = (inst_t)$6;
-                           *($1 + 3) = (inst_t)$7;
+                     *($1 + 1) = (inst_t)$3;
+                     *($1 + 2) = (inst_t)$6;
+                     *($1 + 3) = (inst_t)$7;
                    }
                  | if cond stmt end {
-                           *($1 + 1) = (inst_t)$3;
-                           *($1 + 3) = (inst_t)$4;
+                     *($1 + 1) = (inst_t)$3;
+                     *($1 + 3) = (inst_t)$4;
                    }
                  | for '(' assign delim expr delim assign end ')' stmt end {
-                           *($1 + 1) = (inst_t)$5;
-                           *($1 + 2) = (inst_t)$7;
-                           *($1 + 3) = (inst_t)$10;
+                     *($1 + 1) = (inst_t)$5;
+                     *($1 + 2) = (inst_t)$7;
+                     *($1 + 3) = (inst_t)$10;
                            *($1 + 4) = (inst_t)$11;
                    }
                  ;
