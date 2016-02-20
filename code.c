@@ -245,7 +245,7 @@ int andleft(void)
 
   return 1;
 }
-int andright(void)
+int right(void)
 {
   stack_t y = pop();
   stack_t d;
@@ -254,13 +254,17 @@ int andright(void)
 
   return 1;
 }
-int or(void)
+int orleft(void)
 {
-  stack_t y = pop();
   stack_t x = pop();
   stack_t d;
-  d.n = x.n || y.n;
+  d.n = x.n > 0;
   push(d);
+  if (x.n) {
+    pc = (inst_t*)(*pc);
+  } else {
+    pc++;
+  }
 
   return 1;
 }
