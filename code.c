@@ -231,12 +231,25 @@ int ne(void)
 
   return 1;
 }
-int and(void)
+int andleft(void)
 {
-  stack_t y = pop();
   stack_t x = pop();
   stack_t d;
-  d.n = x.n && y.n;
+  d.n = x.n > 0;
+  push(d);
+  if (x.n) {
+    pc++;
+  } else {
+    pc = (inst_t*)(*pc);
+  }
+
+  return 1;
+}
+int andright(void)
+{
+  stack_t y = pop();
+  stack_t d;
+  d.n = y.n > 0;
   push(d);
 
   return 1;

@@ -21,6 +21,7 @@ inline inst_t* code3(void* a, void* b, void* c) {
 %token NUMBER VAR BUILTIN CONST UNDEF GT GE LT LE EQ NE AND OR NOT EOS PRINT SEM
 %token ADDASGN SUBASGN MULASGN DIVASGN MODASGN POWASGN
 %token IF ELSE WHILE FOR
+%left ADDASGN SUBASGN MULASGN DIVASGN MODASGN POWASGN
 %right '='
 %left OR
 %left AND
@@ -30,9 +31,8 @@ inline inst_t* code3(void* a, void* b, void* c) {
 %left '*' '/' '%'
 %right UNARYMUNUS UNARYPLUS NOT
 %right '^' /* - 2 ^ 3 => - (2 ^ 3) */
-%left ADDASGN SUBASGN MULASGN DIVASGN MODASGN POWASGN
 
-%type <inst> expr assign stmt stmtlist while for delim if cond end
+%type <inst> expr assign stmt stmtlist while for delim if cond end andleft and
 %type <sym> NUMBER VAR BUILTIN PRINT
 
 %start list
@@ -72,7 +72,7 @@ stmt             : expr             {code(shift);  $$ = $1;}
                      *($1 + 1) = (inst_t)$5;
                      *($1 + 2) = (inst_t)$7;
                      *($1 + 3) = (inst_t)$10;
-                           *($1 + 4) = (inst_t)$11;
+                     *($1 + 4) = (inst_t)$11;
                    }
                  ;
 stmtlist         :                      { $$ = next_code(); }
@@ -90,9 +90,21 @@ cond             : '(' expr ')'         { code(STOP); $$ = $2;}
                  ;
 end              :                      { code(STOP); $$ = next_code();}
                  ;
+andleft          : expr AND             {
+                     $$ = code(andleft);
+                     code((inst_t)$1);
+                   }
+                 ;
+and              : andleft expr         {
+                     code(andright);
+                     $$ = (inst_t*)*($1 + 1);
+                     *($1 + 1) = (inst_t)next_code();
+                   }
+                 ;
 expr             : BUILTIN '(' expr ')' { $$ = code3(pushvar, $1, callbuiltin); }
                  | NUMBER               { $$ = code2(pushconst, $1); }
                  | VAR                  { $$ = code3(pushvar, $1, eval); }
+                 | and                  { $$ = $1; }
                  | assign        {code(eval); $$ = $1;}
                  | expr '+' expr {code(add);  $$ = $1;}
                  | expr '-' expr {code(sub);  $$ = $1;}
@@ -109,7 +121,6 @@ expr             : BUILTIN '(' expr ')' { $$ = code3(pushvar, $1, callbuiltin); 
                  | expr LE  expr {code(le);   $$ = $1;}
                  | expr EQ  expr {code(eq);   $$ = $1;}
                  | expr NE  expr {code(ne);   $$ = $1;}
-                 | expr AND expr {code(and);  $$ = $1;}
                  | expr OR  expr {code(or);   $$ = $1;}
                  | NOT expr      {code(not);  $$ = $2;}
                  ;

@@ -88,3 +88,23 @@ print sum
 for (i = 1; i <= 32; i += 1) {
   print 2^i
 }
+a = 10
+b = 10
+(a > 0) && (b = 20)
+a
+b
+(a < 0) && (b = 30)
+a
+b
+while (0 < a) {
+b = 3
+c = 6
+print b && c
+d = 7
+a -= 1
+}
+a
+b
+c
+d
+
