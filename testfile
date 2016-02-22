@@ -108,3 +108,10 @@ b
 c
 d
 print 1;print 2;print 3;
+for (sum = 1, i = 0; i <= 10; i += 1) {
+  sum += i
+}
+print sum
+for (x = 0, y = 0; x <=10; x += 1, y += 2) {
+ print x * y;
+}

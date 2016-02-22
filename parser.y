@@ -32,7 +32,7 @@ inline inst_t* code3(void* a, void* b, void* c) {
 %right UNARYMUNUS UNARYPLUS NOT
 %right '^' /* - 2 ^ 3 => - (2 ^ 3) */
 
-%type <inst> expr assign stmt stmtlist while for delim if cond end andleft and orleft or
+%type <inst> expr assign assignlist stmt stmtlist while for delim if cond end andleft and orleft or
 %type <sym> NUMBER VAR BUILTIN PRINT
 
 %start list
@@ -52,6 +52,9 @@ assign           : VAR '='     expr {code3(pushvar, $1, assign);    $$ = $3;}
                  | VAR MODASGN expr {code3(pushvar, $1, modassign); $$ = $3;}
                  | VAR POWASGN expr {code3(pushvar, $1, powassign); $$ = $3;}
                  ;
+assignlist       : assign                { $$ = $1; }
+                 | assignlist ',' assign { $$ = $1; }
+                 ;
 stmt             : expr             {code(shift);  $$ = $1;}
                  | PRINT expr       {code(prexpr); $$ = $2;}
                  | '{' stmtlist '}' {              $$ = $2;}
@@ -68,7 +71,7 @@ stmt             : expr             {code(shift);  $$ = $1;}
                      *($1 + 1) = (inst_t)$3;
                      *($1 + 3) = (inst_t)$4;
                    }
-                 | for '(' assign delim expr delim assign end ')' stmt end {
+                 | for '(' assignlist delim expr delim assignlist end ')' stmt end {
                      *($1 + 1) = (inst_t)$5;
                      *($1 + 2) = (inst_t)$7;
                      *($1 + 3) = (inst_t)$10;
@@ -78,6 +81,7 @@ stmt             : expr             {code(shift);  $$ = $1;}
 stmtlist         :                      { $$ = next_code(); }
                  | stmtlist EOS         { $$ = $1; }
                  | stmtlist stmt        { $$ = $1; }
+                 ;
 while            : WHILE                { $$ = code(whilecode); code2(STOP, STOP); }
                  ;
 for              : FOR                  { $$ = code(forcode); code2(STOP, STOP);code2(STOP, STOP);}
