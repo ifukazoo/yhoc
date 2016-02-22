@@ -18,7 +18,7 @@ inline inst_t* code3(void* a, void* b, void* c) {
   symbol_t* sym;
 }
 
-%token NUMBER VAR BUILTIN CONST UNDEF GT GE LT LE EQ NE AND OR NOT EOS PRINT SEM
+%token NUMBER VAR BUILTIN CONST UNDEF GT GE LT LE EQ NE AND OR NOT EOS PRINT
 %token ADDASGN SUBASGN MULASGN DIVASGN MODASGN POWASGN
 %token IF ELSE WHILE FOR
 %left ADDASGN SUBASGN MULASGN DIVASGN MODASGN POWASGN
@@ -82,7 +82,7 @@ while            : WHILE                { $$ = code(whilecode); code2(STOP, STOP
                  ;
 for              : FOR                  { $$ = code(forcode); code2(STOP, STOP);code2(STOP, STOP);}
                  ;
-delim            : SEM                  { code(STOP); $$ = next_code();}
+delim            : EOS                  { code(STOP); $$ = next_code();}
                  ;
 if               : IF                   { $$ = code(ifcode); code3(STOP, STOP, STOP); }
                  ;
