@@ -42,14 +42,12 @@ int main(void)
 
   setjmp(begin);
 
-  int success = 1;
-  while (success) {
-
+  for (;;) {
     reset_code();
     if (! yyparse()) break;
 
     reset_code();
-    success = run();
+    run();
   }
   return 0;
 }

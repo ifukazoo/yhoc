@@ -4,7 +4,7 @@
 #include <stdlib.h>
 #include "symbol.h"
 
-typedef int (*inst_t)(void);
+typedef void (*inst_t)(void);
 #define STOP NULL
 
 typedef union {
@@ -13,43 +13,43 @@ typedef union {
 } stack_t;
 
 void init_code(void);
-int run(void);
+void run(void);
 void reset_code(void);
 inst_t* code(inst_t inst);
 inst_t* next_code();
-int pushconst(void);
-int pushvar(void);
-int add(void);
-int sub(void);
-int mul(void);
-int div_(void);
-int mod(void);
-int pow_(void);
-int negate(void);
-int not(void);
-int gt(void);
-int ge(void);
-int lt(void);
-int le(void);
-int eq(void);
-int ne(void);
-int andleft(void);
-int orleft(void);
-int right(void);
-int print(void);
-int prexpr(void);
-int shift(void);
-int eval(void);
-int callbuiltin(void);
-int assign(void);
-int addassign(void);
-int subassign(void);
-int mulassign(void);
-int divassign(void);
-int modassign(void);
-int powassign(void);
-int whilecode(void);
-int forcode(void);
-int ifcode(void);
+void pushconst(void);
+void pushvar(void);
+void add(void);
+void sub(void);
+void mul(void);
+void div_(void);
+void mod(void);
+void pow_(void);
+void negate(void);
+void not(void);
+void gt(void);
+void ge(void);
+void lt(void);
+void le(void);
+void eq(void);
+void ne(void);
+void andleft(void);
+void orleft(void);
+void right(void);
+void print(void);
+void prexpr(void);
+void shift(void);
+void eval(void);
+void callbuiltin(void);
+void assign(void);
+void addassign(void);
+void subassign(void);
+void mulassign(void);
+void divassign(void);
+void modassign(void);
+void powassign(void);
+void whilecode(void);
+void forcode(void);
+void ifcode(void);
 
 #endif

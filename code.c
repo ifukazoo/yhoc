@@ -20,15 +20,14 @@ void init_code(void)
 {
   init_builtin();
 }
-int run(void)
+void run(void)
 {
-  int success = 1;
-  while (*pc != STOP && success) {
-    success = (*pc++)();
+  while (*pc != STOP) {
+    (*pc++)();
     // 実行直後にpcをincrementしていることに注意．
     // pcは命令に制御が移った時点で次の位置にある.
   }
-  return success;
+  return;
 }
 void reset_code(void)
 {
@@ -45,7 +44,7 @@ inst_t* next_code()
 {
   return pc;
 }
-int pushconst(void)
+void pushconst(void)
 {
   /*
    * 次のinstructionに命令ではなく
@@ -57,18 +56,18 @@ int pushconst(void)
   // 次のinstructionに移動
   pc++;
 
-  return 1;
+  return;
 }
-int pushvar(void)
+void pushvar(void)
 {
   stack_t d;
   d.sym = (symbol_t*)(*pc);
   push(d);
   pc++;
 
-  return 1;
+  return;
 }
-int eval(void)
+void eval(void)
 {
   stack_t x = pop();
   if (x.sym->type == UNDEF) {
@@ -81,9 +80,9 @@ int eval(void)
   d.n = n;
   push(d);
 
-  return 1;
+  return;
 }
-int callbuiltin(void)
+void callbuiltin(void)
 {
   stack_t func = pop();
   stack_t arg = pop();
@@ -91,9 +90,9 @@ int callbuiltin(void)
   d.n = call_func(func.sym, arg.n);
   push(d);
 
-  return 1;
+  return;
 }
-int add(void)
+void add(void)
 {
   stack_t y = pop();
   stack_t x = pop();
@@ -101,9 +100,9 @@ int add(void)
   d.n = x.n + y.n;
   push(d);
 
-  return 1;
+  return;
 }
-int sub(void)
+void sub(void)
 {
   stack_t y = pop();
   stack_t x = pop();
@@ -111,9 +110,9 @@ int sub(void)
   d.n = x.n - y.n;
   push(d);
 
-  return 1;
+  return;
 }
-int mul(void)
+void mul(void)
 {
   stack_t y = pop();
   stack_t x = pop();
@@ -121,9 +120,9 @@ int mul(void)
   d.n = x.n * y.n;
   push(d);
 
-  return 1;
+  return;
 }
-int div_(void)
+void div_(void)
 {
   stack_t y = pop();
   stack_t x = pop();
@@ -131,9 +130,9 @@ int div_(void)
   d.n = x.n / y.n;
   push(d);
 
-  return 1;
+  return;
 }
-int mod(void)
+void mod(void)
 {
   stack_t y = pop();
   stack_t x = pop();
@@ -141,9 +140,9 @@ int mod(void)
   d.n = fmod(x.n, y.n);
   push(d);
 
-  return 1;
+  return;
 }
-int pow_(void)
+void pow_(void)
 {
   stack_t y = pop();
   stack_t x = pop();
@@ -151,27 +150,27 @@ int pow_(void)
   d.n = pow(x.n, y.n);
   push(d);
 
-  return 1;
+  return;
 }
-int negate(void)
+void negate(void)
 {
   stack_t x = pop();
   stack_t d;
   d.n = -x.n;
   push(d);
 
-  return 1;
+  return;
 }
-int not(void)
+void not(void)
 {
   stack_t x = pop();
   stack_t d;
   d.n = ! x.n;
   push(d);
 
-  return 1;
+  return;
 }
-int gt(void)
+void gt(void)
 {
   stack_t y = pop();
   stack_t x = pop();
@@ -179,9 +178,9 @@ int gt(void)
   d.n = x.n > y.n;
   push(d);
 
-  return 1;
+  return;
 }
-int ge(void)
+void ge(void)
 {
   stack_t y = pop();
   stack_t x = pop();
@@ -189,9 +188,9 @@ int ge(void)
   d.n = x.n >= y.n;
   push(d);
 
-  return 1;
+  return;
 }
-int lt(void)
+void lt(void)
 {
   stack_t y = pop();
   stack_t x = pop();
@@ -199,9 +198,9 @@ int lt(void)
   d.n = x.n < y.n;
   push(d);
 
-  return 1;
+  return;
 }
-int le(void)
+void le(void)
 {
   stack_t y = pop();
   stack_t x = pop();
@@ -209,9 +208,9 @@ int le(void)
   d.n = x.n <= y.n;
   push(d);
 
-  return 1;
+  return;
 }
-int eq(void)
+void eq(void)
 {
   stack_t y = pop();
   stack_t x = pop();
@@ -219,9 +218,9 @@ int eq(void)
   d.n = x.n == y.n;
   push(d);
 
-  return 1;
+  return;
 }
-int ne(void)
+void ne(void)
 {
   stack_t y = pop();
   stack_t x = pop();
@@ -229,9 +228,9 @@ int ne(void)
   d.n = x.n != y.n;
   push(d);
 
-  return 1;
+  return;
 }
-int andleft(void)
+void andleft(void)
 {
   stack_t x = pop();
   stack_t d;
@@ -243,18 +242,18 @@ int andleft(void)
     pc = (inst_t*)(*pc);
   }
 
-  return 1;
+  return;
 }
-int right(void)
+void right(void)
 {
   stack_t y = pop();
   stack_t d;
   d.n = y.n > 0;
   push(d);
 
-  return 1;
+  return;
 }
-int orleft(void)
+void orleft(void)
 {
   stack_t x = pop();
   stack_t d;
@@ -266,26 +265,26 @@ int orleft(void)
     pc++;
   }
 
-  return 1;
+  return;
 }
-int print(void)
+void print(void)
 {
   stack_t d = pop();
   printf("= %g\n", d.n);
-  return 1;
+  return;
 }
-int prexpr(void)
+void prexpr(void)
 {
   stack_t d = pop();
   printf("%g\n", d.n);
-  return 1;
+  return;
 }
-int shift(void)
+void shift(void)
 {
   pop();
-  return 1;
+  return;
 }
-int assign(void)
+void assign(void)
 {
   stack_t var = pop();
   stack_t value = pop();
@@ -298,9 +297,9 @@ int assign(void)
   var.sym->type = VAR;
   push(var);
 
-  return 1;
+  return;
 }
-int addassign(void)
+void addassign(void)
 {
   stack_t var = pop();
   stack_t value = pop();
@@ -313,9 +312,9 @@ int addassign(void)
   value_of(var.sym) = newval;
   push(var);
 
-  return 1;
+  return;
 }
-int subassign(void)
+void subassign(void)
 {
   stack_t var = pop();
   stack_t value = pop();
@@ -328,9 +327,9 @@ int subassign(void)
   value_of(var.sym) = newval;
   push(var);
 
-  return 1;
+  return;
 }
-int mulassign(void)
+void mulassign(void)
 {
   stack_t var = pop();
   stack_t value = pop();
@@ -343,9 +342,9 @@ int mulassign(void)
   value_of(var.sym) = newval;
   push(var);
 
-  return 1;
+  return;
 }
-int divassign(void)
+void divassign(void)
 {
   stack_t var = pop();
   stack_t value = pop();
@@ -358,9 +357,9 @@ int divassign(void)
   value_of(var.sym) = newval;
   push(var);
 
-  return 1;
+  return;
 }
-int modassign(void)
+void modassign(void)
 {
   stack_t var = pop();
   stack_t value = pop();
@@ -373,9 +372,9 @@ int modassign(void)
   value_of(var.sym) = newval;
   push(var);
 
-  return 1;
+  return;
 }
-int powassign(void)
+void powassign(void)
 {
   stack_t var = pop();
   stack_t value = pop();
@@ -388,9 +387,9 @@ int powassign(void)
   value_of(var.sym) = newval;
   push(var);
 
-  return 1;
+  return;
 }
-int whilecode(void)
+void whilecode(void)
 {
   /*
      while
@@ -423,9 +422,9 @@ int whilecode(void)
 
   pc = (inst_t*)*(base + 2);
 
-  return 1;
+  return;
 }
-int forcode(void)
+void forcode(void)
 {
   /*
      for
@@ -473,9 +472,9 @@ int forcode(void)
   // next
   pc = (inst_t*)*(base + 4);
 
-  return 1;
+  return;
 }
-int ifcode(void)
+void ifcode(void)
 {
   /*
      ifcode
@@ -518,7 +517,7 @@ int ifcode(void)
 
   pc = (inst_t*)*(base + 3);
 
-  return 1;
+  return;
 }
 static stack_t pop(void)
 {
